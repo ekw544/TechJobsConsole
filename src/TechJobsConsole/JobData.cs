@@ -13,7 +13,12 @@ namespace TechJobsConsole
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
-            return AllJobs;
+
+            List<Dictionary<string, string>> jobsCopy = new List<Dictionary<string, string>>();
+            
+            AllJobs.ForEach(job => jobsCopy.Add(new Dictionary<string, string>(job)));
+
+            return jobsCopy;
         }
 
         /*
@@ -49,9 +54,30 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (caseInsensitiveSearch(aValue, value))
                 {
                     jobs.Add(row);
+                }
+            }
+
+            return jobs;
+        }
+
+        public static List<Dictionary<string, string>> FindByValue(string searchTerm)
+        {
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                foreach (KeyValuePair<string, string> jobDetail in job)
+                {
+                    if (caseInsensitiveSearch(jobDetail.Value, searchTerm))
+                    {
+                        jobs.Add(job);
+                        break;
+                    }
                 }
             }
 
@@ -137,6 +163,11 @@ namespace TechJobsConsole
             valueBuilder.Clear();
 
             return rowValues.ToArray();
+        }
+
+        private static bool caseInsensitiveSearch(string text, string searchTerm)
+        {
+            return text.ToLower().Contains(searchTerm.ToLower());
         }
     }
 }
